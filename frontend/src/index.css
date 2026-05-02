@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+html, body, #root {
+    height: 100%;
+    /* Prevent white flash on overscroll / elastic scroll on all pages */
+    background-color: #030712;
+}
+
+body {
+    margin: 0;
+    overflow-x: hidden;
+}
+
+/* ── Entrance animations ── */
+@keyframes fadeIn  { from { opacity: 0; transform: translateY(8px); }  to { opacity: 1; transform: translateY(0); } }
+@keyframes slideIn { from { opacity: 0; transform: translateX(-16px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(0.95); }       to { opacity: 1; transform: scale(1); } }
+@keyframes popIn   { 0% { opacity: 0; transform: scale(0.6); } 70% { transform: scale(1.1); } 100% { opacity: 1; transform: scale(1); } }
+
+/* ── Continuous effects ── */
+@keyframes shimmer  { 0% { background-position: -200% center; } 100% { background-position: 200% center; } }
+@keyframes floatUp  { 0%, 100% { transform: translateY(0px); }  50% { transform: translateY(-8px); } }
+@keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 20px 4px rgba(59,130,246,0.15); } 50% { box-shadow: 0 0 40px 8px rgba(59,130,246,0.30); } }
+@keyframes gradientX { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
+/* ── Background orb drift ── */
+@keyframes orb1 {
+  0%,  100% { transform: translate(0,     0   ) scale(1);    }
+  33%        { transform: translate(40px, -50px) scale(1.08); }
+  66%        { transform: translate(-30px, 30px) scale(0.94); }
+}
+@keyframes orb2 {
+  0%,  100% { transform: translate(0,     0   ) scale(1);    }
+  33%        { transform: translate(-50px, 35px) scale(0.93); }
+  66%        { transform: translate(30px, -40px) scale(1.1);  }
+}
+@keyframes orb3 {
+  0%,  100% { transform: translate(0,     0   ) scale(1);    }
+  50%        { transform: translate(25px,  45px) scale(1.06); }
+}
+
+/* ── Utility classes ── */
+.animate-fade-in   { animation: fadeIn   0.4s ease-out both; }
+.animate-slide-in  { animation: slideIn  0.4s ease-out both; }
+.animate-slide-up  { animation: slideUp  0.5s ease-out both; }
+.animate-scale-in  { animation: scaleIn  0.3s ease-out both; }
+.animate-pop-in    { animation: popIn    0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+.animate-float     { animation: floatUp  4s ease-in-out infinite; }
+.animate-glow      { animation: pulseGlow 3s ease-in-out infinite; }
+.animate-gradient  { background-size: 200% 200%; animation: gradientX 6s ease infinite; }
+.bg-orb-1 { animation: orb1 20s ease-in-out infinite; }
+.bg-orb-2 { animation: orb2 26s ease-in-out infinite; }
+.bg-orb-3 { animation: orb3 17s ease-in-out infinite; }
+.anim-delay-100 { animation-delay: 0.1s; }
+.anim-delay-200 { animation-delay: 0.2s; }
+.anim-delay-300 { animation-delay: 0.3s; }
+.anim-delay-400 { animation-delay: 0.4s; }
+.anim-delay-500 { animation-delay: 0.5s; }
+.anim-delay-600 { animation-delay: 0.6s; }
+.anim-delay-700 { animation-delay: 0.7s; }
+
+/* ── Global scrollbar styling ── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #374151 transparent;
+}
+*::-webkit-scrollbar       { width: 6px; height: 6px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
+*::-webkit-scrollbar-thumb:hover { background: #4b5563; }

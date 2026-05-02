@@ -1,0 +1,26 @@
+# ==========================================
+# FYP Deployment: Universal .gitignore
+# ==========================================
+
+# --- Node.js (React Frontend & Express Backend) ---
+node_modules/
+dist/
+build/
+.npm/
+
+# --- Python (FastAPI & LangGraph Microservice) ---
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.venv/
+
+# --- Environment Variables & Secrets ---
+# CRITICAL: Never commit these to version control
+.env
+.env.*
+
+# --- OS Generated Files ---
+.DS_Store
+Thumbs.db

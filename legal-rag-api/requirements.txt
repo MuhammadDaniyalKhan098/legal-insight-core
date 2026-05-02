@@ -1,0 +1,39 @@
+# --extra-index-url https://download.pytorch.org/whl/cpu
+
+# FastAPI and server
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+pydantic>=2.7.4
+python-multipart==0.0.6
+
+# LangGraph and LangChain
+langgraph==1.0.3
+langchain                  # Unpinned (Automatic version)
+langchain-google-genai     # Unpinned (Automatic version) - CRITICAL FIX
+langchain-core             # Unpinned (Automatic version)
+
+# LlamaIndex
+# llama-index-embeddings-google-genai
+llama-index-embeddings-jinaai
+llama-index-core
+
+# Neo4j
+neo4j-driver==5.16.0
+
+# Google AI
+google-generativeai==0.3.2
+
+# Utilities
+python-dotenv==1.0.0
+nest-asyncio==1.5.8
+
+# CORS
+python-jose[cryptography]==3.3.0
+
+python-multipart
+pypdf
+python-docx
+
+# torch
+# transformers
+# llama-index-embeddings-huggingface
