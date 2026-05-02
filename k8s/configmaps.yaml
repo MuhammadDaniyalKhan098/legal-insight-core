@@ -7,12 +7,12 @@ data:
   NODE_ENV: "production"
   MONGO_URI: "mongodb://mongodb:27017/legalbot"
   RAG_API_URL: "http://rag-service:8000/api/query"
-  FRONTEND_URL: ...
-  EMAIL_HOST: smtp.gmail.com
-  EMAIL_PORT: 587
-  EMAIL_USER: shahmirmufti707@gmail.com
-  EMAIL_FROM: shahmirmufti707@gmail.com
-  EMAIL_FROM_NAME: SprojApplication
+  FRONTEND_URL: "http://13.212.120.5"
+  EMAIL_HOST: "smtp.gmail.com"
+  EMAIL_PORT: "587"
+  EMAIL_USER: "shahmirmufti707@gmail.com"
+  EMAIL_FROM: "shahmirmufti707@gmail.com"
+  EMAIL_FROM_NAME: "SprojApplication"
 ---
 apiVersion: v1
 kind: ConfigMap
