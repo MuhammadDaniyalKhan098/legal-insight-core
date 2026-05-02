@@ -1,0 +1,59 @@
+# ==========================================
+# FYP Deployment: MongoDB StatefulSet
+# ==========================================
+
+# 1. THE HEADLESS SERVICE
+# This gives MongoDB a consistent internal network name (DNS).
+# We use "clusterIP: None" because StatefulSets need direct connection to the exact Pod.
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+  labels:
+    app: mongodb
+spec:
+  ports:
+  - port: 27017
+    name: mongo
+  clusterIP: None 
+  selector:
+    app: mongodb
+
+---
+
+# 2. THE STATEFULSET
+# This manages the deployment of the database, guaranteeing network identity and storage.
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb
+spec:
+  serviceName: "mongodb"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - name: mongodb
+        image: mongo:6.0 # Pulling the official image, just like docker-compose
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - name: mongo-data
+          mountPath: /data/db
+
+  # 3. THE STORAGE CLAIM (Persistent Volume Claim)
+  # This dynamically asks Minikube to carve out 2GB of our EC2 hard drive purely for Mongo data.
+  volumeClaimTemplates:
+  - metadata:
+      name: mongo-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 2Gi

@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+data:
+  default.conf: |
+    server {
+        listen 80;
+        
+        # 1. Serve the React Application
+        location / {
+            root /usr/share/nginx/html;
+            index index.html index.htm;
+            # This 'try_files' is critical for React Router to work!
+            try_files $uri $uri/ /index.html;
+        }
+
+        # 2. The Reverse Proxy Magic!
+        # When the browser asks for /api/something, Nginx forwards it here
+        location /api/ {
+            proxy_pass http://backend:5000/;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+        }
+    }

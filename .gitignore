@@ -34,3 +34,5 @@ Thumbs.db
 crash.log
 *.tfvars
 *.pem
+
+k8s/secrets.yaml

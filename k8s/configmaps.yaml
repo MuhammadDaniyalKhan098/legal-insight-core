@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+data:
+  PORT: "5000"
+  NODE_ENV: "production"
+  MONGO_URI: "mongodb://mongodb:27017/legalbot"
+  RAG_API_URL: "http://rag-service:8000/api/query"
+  FRONTEND_URL: ...
+  EMAIL_HOST: smtp.gmail.com
+  EMAIL_PORT: 587
+  EMAIL_USER: shahmirmufti707@gmail.com
+  EMAIL_FROM: shahmirmufti707@gmail.com
+  EMAIL_FROM_NAME: SprojApplication
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rag-config
+data:
+  NEO4J_URL: "neo4j+s://c5485f01.databases.neo4j.io"
+  NEO4J_USER: "neo4j"
+  NEO4J_DATABASE: "neo4j"
+
+  NEO4J_URL_2: "bolt+ssc://13ac1490.databases.neo4j.io"
+  NEO4J_USER_2: "neo4j"
+  NEO4J_DATABASE_2: "neo4j"
+
+  NEO4J_URL_3: "neo4j+s://dbcc7879.databases.neo4j.io"
+  NEO4J_USER_3: "neo4j"
+  NEO4J_DATABASE_3: "neo4j"
+
+  NEO4J_URL_4: "neo4j+s://d2fb511f.databases.neo4j.io"
+  NEO4J_USER_4: "neo4j"
+  NEO4J_DATABASE_4: "neo4j"

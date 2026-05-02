@@ -1,0 +1,136 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rag-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rag-service
+  template:
+    metadata:
+      labels:
+        app: rag-service
+    spec:
+      containers:
+      - name: rag-service
+        image: daniyal142khan/legal-insight-rag:latest
+        ports:
+        - containerPort: 8000
+        env:
+        # --- ConfigMap: Instance 1 ---
+        - name: NEO4J_URL
+          valueFrom:
+            configMapKeyRef:
+              name: rag-config
+              key: NEO4J_URL
+        - name: NEO4J_USER
+          valueFrom:
+            configMapKeyRef:
+              name: rag-config
+              key: NEO4J_USER
+        - name: NEO4J_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: rag-config
+              key: NEO4J_DATABASE
+        # --- ConfigMap: Instance 2 ---
+        - name: NEO4J_URL_2
+          valueFrom:
+            configMapKeyRef:
+              name: rag-config
+              key: NEO4J_URL_2
+        - name: NEO4J_USER_2
+          valueFrom:
+            configMapKeyRef:
+              name: rag-config
+              key: NEO4J_USER_2
+        - name: NEO4J_DATABASE_2
+          valueFrom:
+            configMapKeyRef:
+              name: rag-config
+              key: NEO4J_DATABASE_2
+        # --- ConfigMap: Instance 3 ---
+        - name: NEO4J_URL_3
+          valueFrom:
+            configMapKeyRef:
+              name: rag-config
+              key: NEO4J_URL_3
+        - name: NEO4J_USER_3
+          valueFrom:
+            configMapKeyRef:
+              name: rag-config
+              key: NEO4J_USER_3
+        - name: NEO4J_DATABASE_3
+          valueFrom:
+            configMapKeyRef:
+              name: rag-config
+              key: NEO4J_DATABASE_3
+        # --- ConfigMap: Instance 4 ---
+        - name: NEO4J_URL_4
+          valueFrom:
+            configMapKeyRef:
+              name: rag-config
+              key: NEO4J_URL_4
+        - name: NEO4J_USER_4
+          valueFrom:
+            configMapKeyRef:
+              name: rag-config
+              key: NEO4J_USER_4
+        - name: NEO4J_DATABASE_4
+          valueFrom:
+            configMapKeyRef:
+              name: rag-config
+              key: NEO4J_DATABASE_4
+
+        # --- Secrets: API Keys & Passwords ---
+        - name: GOOGLE_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: rag-secrets
+              key: GOOGLE_API_KEY
+        - name: JINA_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: rag-secrets
+              key: JINA_API_KEY
+        - name: MY_INTERNAL_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: rag-secrets
+              key: MY_INTERNAL_API_KEY
+        - name: NEO4J_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: rag-secrets
+              key: NEO4J_PASSWORD
+        - name: NEO4J_PASSWORD_2
+          valueFrom:
+            secretKeyRef:
+              name: rag-secrets
+              key: NEO4J_PASSWORD_2
+        - name: NEO4J_PASSWORD_3
+          valueFrom:
+            secretKeyRef:
+              name: rag-secrets
+              key: NEO4J_PASSWORD_3
+        - name: NEO4J_PASSWORD_4
+          valueFrom:
+            secretKeyRef:
+              name: rag-secrets
+              key: NEO4J_PASSWORD_4
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: rag-service
+spec:
+  selector:
+    app: rag-service
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+  type: ClusterIP
