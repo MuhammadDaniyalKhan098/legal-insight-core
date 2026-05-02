@@ -18,6 +18,9 @@ FROM nginx:alpine
 # Copy the built assets from Stage 1 into the Nginx public HTML folder
 COPY --from=build /app/dist /usr/share/nginx/html
 
+# NEW: Copy our custom Nginx config to fix React routing (404s)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 # Expose port 80 (the default Nginx HTTP port)
 EXPOSE 80
 

@@ -1,0 +1,75 @@
+# ==========================================
+# FYP Deployment: Local Orchestration
+# ==========================================
+version: '3.8'
+
+services:
+  # --- 1. The Database (Stateful Service) ---
+  mongodb:
+    image: mongo:6.0  # Using official pre-built image
+    container_name: legal_insight_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db # Maps container data to our persistent volume
+    networks:
+      - legal_network
+    restart: unless-stopped
+
+  # 1. The Application Gateway (Node.js/Express)
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: legal_insight_backend
+    ports:
+      - "5000:5000"
+    environment:
+      # Override the .env file to point to our new local container!
+      - MONGO_URI=mongodb://mongodb:27017/legalbot
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - mongodb # Ensure DB starts before backend
+    networks:
+      - legal_network
+    restart: unless-stopped
+
+  # 2. The AI Microservice (FastAPI/LangGraph)
+  rag_service:
+    build: 
+      context: ./rag_service
+      dockerfile: Dockerfile
+    container_name: legal_insight_rag
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./rag_service/.env # Connects to your Gemini API and cloud Neo4j
+    networks:
+      - legal_network
+    restart: unless-stopped
+
+  # 3. The Client Layer (React/Vite/Nginx)
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: legal_insight_frontend
+    ports:
+      - "3000:80" # Maps your local port 3000 to Nginx's internal port 80
+    depends_on:
+      - backend
+      - rag_service
+    networks:
+      - legal_network
+    restart: unless-stopped
+
+# Define a custom bridge network so the containers can resolve each other by name
+networks:
+  legal_network:
+    driver: bridge
+
+volumes:
+  # This tells Docker to save the database files permanently on our host machine.
+  # If we destroy the container, the data survives here.
+  mongo_data:
