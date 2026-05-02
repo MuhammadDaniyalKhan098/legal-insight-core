@@ -24,3 +24,13 @@ env/
 # --- OS Generated Files ---
 .DS_Store
 Thumbs.db
+
+# ==========================================
+# FYP Deployment: Terraform & AWS Security
+# ==========================================
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars
+*.pem
