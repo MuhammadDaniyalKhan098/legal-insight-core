@@ -1,0 +1,16 @@
+# Security
+.env
+
+# Python Virtual Environment
+venv/
+env/
+
+# Python Cache (These cause weird bugs if copied over)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Git
+.git
+.gitignore
