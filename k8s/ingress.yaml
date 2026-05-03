@@ -1,0 +1,58 @@
+# ==========================================
+# FYP Deployment: Multi-Route Ingress
+# ==========================================
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: legal-insight-ingress
+  annotations:
+    # ANNOTATIONS: This is where you pass special instructions to the Controller.
+    # This specific line tells K8s: "Hey, I might have multiple routers installed, 
+    # but I want the 'nginx' Ingress Controller to handle this specific file."
+    kubernetes.io/ingress.class: nginx
+    
+    # 1. ENABLE REGEX: This is required to use (.*) in the path field below.
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    
+    # 2. THE REWRITE TARGET: This is the "Eraser."
+    # It takes whatever was caught in the second parentheses (.*) and
+    # makes that the new path before sending it to the backend.
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  rules:
+    # HOST (Optional): If we put `- host: legalinsight.local` here, it ONLY 
+    # lets traffic in if the user typed that exact domain. By removing it, 
+    # we turned this into a "Catch-All" rule that accepts any raw IP request.
+    - http: 
+        paths:
+          # RULE 1: The API Route (The Specific Match)
+          # We put this first because Kubernetes matches from TOP to BOTTOM. 
+          # If we put '/' first, it would catch everything and the backend 
+          # would never receive any data.
+          # Path Breakdown: 
+          # /api  -> Matches the literal string
+          # (/|$) -> Group $1: Matches a trailing slash OR the end of the string
+          # (.*)  -> Group $2: Matches everything else (e.g., "users/login")
+          - path: /api(/|$)(.*)
+            # ImplementationSpecific: Required for Regex matching to work correctly.
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: backend    # Must match your Express ClusterIP Service name
+                port:
+                  number: 5000   # Must match your Express Service port
+          
+          # RULE 2: The Frontend Catch-All (The General Match)
+          # This acts as the "default" destination. If a request doesn't 
+          # start with '/api', it falls down to this rule.
+          # Path Breakdown:
+          # /     -> Matches the root
+          # ()    -> Group $1: Empty (place-holder)
+          # (.*)  -> Group $2: Matches the page or asset (e.g., "main.js" or "history")
+          - path: /()(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: frontend   # Must match your React ClusterIP Service name
+                port:
+                  number: 80     # Must match your Nginx Service port
