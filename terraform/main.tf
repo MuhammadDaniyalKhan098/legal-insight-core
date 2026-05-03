@@ -81,8 +81,13 @@ resource "aws_instance" "legal_insight_server" {
   }
 }
 
+resource "aws_eip" "legal_insight_eip" {
+  instance = aws_instance.legal_insight_server.id
+  domain   = "vpc"
+}
+
 # 3. THE OUTPUT
-output "server_public_ip" {
-  value       = aws_instance.legal_insight_server.public_ip
-  description = "The public IP address of the EC2 instance"
+output "server_static_public_ip" {
+  value       = aws_eip.legal_insight_eip.public_ip
+  description = "The public IP address of Elastic IP associated with the EC2 instance"
 }

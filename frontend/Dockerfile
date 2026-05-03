@@ -6,7 +6,7 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 COPY . .
 # This creates the optimized production build in the /app/dist folder
 RUN npm run build 

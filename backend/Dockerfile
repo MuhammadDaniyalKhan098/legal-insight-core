@@ -14,7 +14,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # 4. Install Dependencies: Run npm install inside the container
-RUN npm install
+RUN npm ci
 
 # 5. Copy Source Code: Copy the rest of the backend files into the container
 COPY . .
