@@ -1,11 +1,16 @@
 name: Legal Insight CI/CD Pipeline
 
-# This tells GitHub to run this script ONLY when you push to the 'main' branch
+# ==========================================
+# THE TRIGGER
+# ==========================================
+# This section dictates WHEN the pipeline wakes up.
 on:
   push:
     branches:
       - main
-    # Add this paths-ignore block! It will not run CI/CD pipeline if any of these files are changed.
+    # PATH FILTERING: The pipeline will IGNORE pushes if the only changed 
+    # files match this list. This separates application code from 
+    # infrastructure/local-testing code, saving time and compute resources.
     paths-ignore:
       - 'terraform/**'
       - 'README.md'
@@ -17,16 +22,22 @@ jobs:
   # STAGE 1: CONTINUOUS INTEGRATION (TESTING)
   # ==========================================
   test:
+    # Provisions a temporary Linux server hosted by GitHub
     runs-on: ubuntu-latest
     steps:
+      # Step 1: Fetches the latest code from the 'main' branch and 
+      # places it on the temporary server's hard drive.
       - name: Checkout Code
         uses: actions/checkout@v3
       
+      # Step 2: Installs the Node.js runtime on the temporary server
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
           
+      # Step 3: Navigates into the backend folder, installs dependencies, 
+      # and runs the test suite. If this fails, the entire pipeline crashes.
       - name: Run Backend Tests
         working-directory: ./backend
         run: |
@@ -37,18 +48,24 @@ jobs:
   # STAGE 2: CONTINUOUS DELIVERY (BUILD & PUSH)
   # ==========================================
   build-and-push:
-    needs: test # This guarantees the build WON'T start if the test fails!
+    # DEPENDENCY: This ensures the build phase waits for the 'test' phase. 
+    # It will not execute if the tests fail.
+    needs: test 
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      # Authenticates with Docker Hub using secure tokens stored in GitHub Secrets.
+      # This allows the runner to upload images to our private/public registry.
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # Compiles the Node.js Dockerfile and pushes it to the registry.
+      # Tags it as 'latest' to ensure Kubernetes always pulls this exact version.
       - name: Build and Push Backend
         uses: docker/build-push-action@v4
         with:
@@ -56,6 +73,7 @@ jobs:
           push: true
           tags: daniyal142khan/legal-insight-backend:latest
 
+      # Compiles the React/Nginx Dockerfile
       - name: Build and Push Frontend
         uses: docker/build-push-action@v4
         with:
@@ -63,6 +81,7 @@ jobs:
           push: true
           tags: daniyal142khan/legal-insight-frontend:latest
 
+      # Compiles the FastAPI/RAG Dockerfile
       - name: Build and Push RAG Service
         uses: docker/build-push-action@v4
         with:
@@ -74,13 +93,17 @@ jobs:
   # STAGE 3: CONTINUOUS DEPLOYMENT (AWS UPDATE)
   # ==========================================
   deploy:
-    needs: build-and-push # Only deploy if the new images were successfully pushed
+    # DEPENDENCY: Only attempts to deploy to AWS if the Docker images 
+    # were successfully built and pushed.
+    needs: build-and-push 
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # 1. Securely copy our updated K8s YAML files to the EC2 server
+      # Step 1: Secure Copy Protocol (SCP)
+      # Uses our AWS SSH key to securely transfer the 'k8s' folder 
+      # from the GitHub runner directly onto the AWS EC2 instance.
       - name: Copy K8s files to EC2
         uses: appleboy/scp-action@master
         with:
@@ -90,7 +113,8 @@ jobs:
           source: "k8s/*"
           target: "/home/ubuntu/legal-insight-core"
 
-      # 2. Securely SSH into the server and run the Kubernetes commands
+      # Step 2: Remote Execution (SSH)
+      # Logs into the AWS server and acts like a human typing in the terminal.
       - name: Execute Kubernetes Commands via SSH
         uses: appleboy/ssh-action@master
         with:
@@ -98,8 +122,11 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Apply any changes made to the Kubernetes YAML files (like ConfigMaps)
+            # 1. Update Cluster Architecture: Applies any new configurations 
+            # (e.g., changes to ConfigMaps, Ingress routes, or Secrets).
             kubectl apply -f /home/ubuntu/legal-insight-core/k8s/
             
-            # Force the Deployments to restart, pulling the brand-new Docker images!
+            # 2. Zero-Downtime Update: Forces Kubernetes to gracefully terminate 
+            # the old pods and spin up new ones. During creation, the new pods 
+            # will automatically download the newly built ':latest' Docker images.
             kubectl rollout restart deployment frontend backend rag-service
