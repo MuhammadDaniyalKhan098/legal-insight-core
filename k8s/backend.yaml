@@ -110,5 +110,3 @@ spec:
       port: 5000
       targetPort: 5000
   type: ClusterIP
-
-# Triggering production deployment test
