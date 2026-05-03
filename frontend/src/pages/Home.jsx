@@ -48,7 +48,7 @@ const Home = ({ user, error }) => {
                   </div>
                 )}
                 <h2 className="text-3xl font-bold mb-2 text-white animate-fade-in anim-delay-100">
-                  Welcome back, {user.username}!
+                  Hello!!! Welcome back, {user.username}!
                 </h2>
                 <p className="text-gray-400 text-sm animate-fade-in anim-delay-200">{user.email}</p>
               </div>
