@@ -5,6 +5,12 @@ on:
   push:
     branches:
       - main
+    # Add this paths-ignore block! It will not run CI/CD pipeline if any of these files are changed.
+    paths-ignore:
+      - 'terraform/**'
+      - 'README.md'
+      - '.gitignore'
+      - 'docker-compose.yml'
 
 jobs:
   # ==========================================
