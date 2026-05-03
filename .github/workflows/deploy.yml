@@ -29,6 +29,27 @@ jobs:
       # places it on the temporary server's hard drive.
       - name: Checkout Code
         uses: actions/checkout@v3
+
+      # ==========================================
+      # DEVSECOPS: TRIVY VULNERABILITY SCANNER
+      # ==========================================
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'             # Scans the file system (your code and dependencies)
+          ignore-unfixed: true        # Ignores vulnerabilities that don't have a patch yet
+          format: 'table'             # Prints a beautiful table in the GitHub Actions logs
+          severity: 'CRITICAL,HIGH'   # Only fails the pipeline if a massive vulnerability is found
+      
+      # ==========================================
+      # DEVSECOPS: SEMGREP SAST SCANNER
+      # ==========================================
+      - name: Run Semgrep SAST
+        uses: returntocorp/semgrep-action@v1
+        with:
+          # This tells Semgrep to use the official OWASP Top 10 security rules
+          # specifically tailored for Python, Node.js, and React.
+          config: p/owasp-top-ten
       
       # Step 2: Installs the Node.js runtime on the temporary server
       - name: Setup Node.js
