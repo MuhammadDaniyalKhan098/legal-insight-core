@@ -36,3 +36,7 @@ crash.log
 *.pem
 
 k8s/secrets.yaml
+
+
+
+# Testing CI/CD ignore paths
