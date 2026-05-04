@@ -122,6 +122,10 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            # 1. DISK CLEANUP: Remove unused/dangling Docker images inside Minikube
+            # This prevents the "no space left on device" error during image pulls.
+            minikube ssh "docker image prune -af"
+
             # 1. Update Cluster Architecture: Applies any new configurations 
             # (e.g., changes to ConfigMaps, Ingress routes, or Secrets).
             kubectl apply -f /home/ubuntu/legal-insight-core/k8s/
