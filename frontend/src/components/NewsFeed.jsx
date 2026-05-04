@@ -10,9 +10,10 @@ const NewsFeed = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const { data } = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/news`,
-        );
+        // const { data } = await axios.get(
+        //   `${import.meta.env.VITE_API_URL}/api/news`,
+        // );
+        const { data } = await axios.get("/api/news");
 
         // FIX: Changed article.urlToImage to article.image for GNews
         const validArticles = data.filter(

@@ -5,8 +5,7 @@ const router = express.Router();
 
 router.get("/", async (req, res) => {
   try {
-    // Make sure to update your .env file to use GNEWS_API_KEY
-    const API_KEY = process.env.GNEWS_API_KEY;
+    const API_KEY = process.env.NEWS_API_KEY;
     
     // Updated to the GNews v4 search endpoint
     const response = await axios.get("https://gnews.io/api/v4/search", {
